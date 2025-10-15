@@ -2,6 +2,9 @@ local loader = {}
 
 
 
+function loader:draw()
+    
+end
 
 
 
