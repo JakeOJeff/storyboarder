@@ -15,4 +15,8 @@ function loader:draw()
     fileInput:draw()
 end
 
+function loader:keypressed(key)
+    fileInput:keypressed(key)
+end
+
 return loader
