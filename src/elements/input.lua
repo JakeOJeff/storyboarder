@@ -12,20 +12,39 @@ function input:new(x, y, width, padding, font, border)
     obj.font = font
     obj.border = border or 2
     obj.padding = padding or 4
-    obj.text = {}
-    obj.cursor = 1
+    obj.text = convertText("Untitled")
+    obj.cursor = #obj.text + 1
+    obj.selected = false
     return obj
 end
 
 function input:textInput(t)
-    table.insert(self.text, self.cursor, t)
-    self.cursor = self.cursor + 1
+    if self.selected then
+        table.insert(self.text, self.cursor, t)
+        self.cursor = self.cursor + 1
+    end
+end
+
+function input:mousepressed(x, y, button)
+    if button == 1 then
+        if x > self.x and x < self.x + self.width and y > self.y and y < self.y + self.height then
+            self.selected = true
+        else
+            self.selected = false
+        end
+    end
+
 end
 
 function input:keypressed(key)
     if key == "backspace" and self.cursor > 1 then
-        table.remove(self.text, self.cursor - 1)
-        self.cursor = self.cursor - 1
+        if love.keyboard.isDown("control") then
+            
+        else
+            table.remove(self.text, self.cursor - 1)
+            self.cursor = self.cursor - 1
+        end
+
     end
     if key == "delete" and self.cursor < #self.text + 1 then
         table.remove(self.text, self.cursor)
@@ -52,18 +71,31 @@ function input:draw()
     love.graphics.setFont(self.font)
     love.graphics.print(table.concat(self.text), self.x + self.padding, self.y + self.padding)
 
-    local blinkAlpha = 0.5 + 0.5 * math.sin(love.timer.getTime() * 5)
-    local blinkTable = {}
-    if self.cursor > 1 then
-        table.move(self.text, 1, self.cursor - 1, 1, blinkTable)
-    end
-    local cursorX = self.x + self.padding + self.font:getWidth(table.concat(blinkTable))
-    local cursorY = self.y + self.padding
-    local cursorWidth = 2
-    local cursorHeight = self.font:getHeight()
+    if self.selected then
+        local blinkAlpha = 0.5 + 0.5 * math.sin(love.timer.getTime() * 5)
+        local blinkTable = {}
+        if self.cursor > 1 then
+            table.move(self.text, 1, self.cursor - 1, 1, blinkTable)
+        end
+        local cursorX = self.x + self.padding + self.font:getWidth(table.concat(blinkTable))
+        local cursorY = self.y + self.padding
+        local cursorWidth = 2
+        local cursorHeight = self.font:getHeight()
 
-    love.graphics.setColor(0, 0, 0, blinkAlpha)
-    love.graphics.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
+        love.graphics.setColor(0, 0, 0, blinkAlpha)
+        love.graphics.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
+    end
+
+end
+
+function convertText(text)
+    local t = {}
+
+    for c in text:gmatch(".") do
+        table.insert(t, c)
+    end
+
+    return t
 end
 
 return input

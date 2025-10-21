@@ -19,4 +19,8 @@ function loader:keypressed(key)
     fileInput:keypressed(key)
 end
 
+function loader:mousepressed(x, y, button)
+    fileInput:mousepressed(x, y, button)
+end
+
 return loader
