@@ -2,8 +2,6 @@ local input = {}
 input.__index = input
 
 
-local blinkAlpha
-
 function input:new(x, y, width, padding, font, border)
     local obj = setmetatable({}, self)
     obj.x = x
@@ -29,7 +27,9 @@ function input:keypressed(key)
         table.remove(self.text, self.cursor - 1)
         self.cursor = self.cursor - 1
     end
-
+    if key == "delete" and self.cursor < #self.text + 1 then
+        table.remove(self.text, self.cursor)
+    end
 
     if key == "left" then
         if self.cursor > 1 then
@@ -47,15 +47,23 @@ end
 function input:draw()
     love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height, self.border)
+
     love.graphics.setColor(0, 0, 0)
     love.graphics.setFont(self.font)
     love.graphics.print(table.concat(self.text), self.x + self.padding, self.y + self.padding)
-    blinkAlpha = math.sin(love.timer.getTime() * 15)
-    blinkTable = {}
-    table.move(self.text, 1, self.cursor - 1, 1, blinkTable)
 
-    love.graphics.setColor(0,0,0,blinkAlpha)
-    love.graphics.rectangle("fill", self.x + self.padding + self.font:getWidth(table.concat(blinkTable)), self.y + self.padding, self.font:getWidth("_"), self.height - self.padding*2)
+    local blinkAlpha = 0.5 + 0.5 * math.sin(love.timer.getTime() * 5)
+    local blinkTable = {}
+    if self.cursor > 1 then
+        table.move(self.text, 1, self.cursor - 1, 1, blinkTable)
+    end
+    local cursorX = self.x + self.padding + self.font:getWidth(table.concat(blinkTable))
+    local cursorY = self.y + self.padding
+    local cursorWidth = 2
+    local cursorHeight = self.font:getHeight()
+
+    love.graphics.setColor(0, 0, 0, blinkAlpha)
+    love.graphics.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
 end
 
 return input
