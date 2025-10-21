@@ -13,7 +13,7 @@ wH = love.graphics.getHeight()
 scale = math.max(wW / baseWidth, wH / baseHeight)
 
 local scenery = SceneryInit(
-    { path = "src.loader", key = "loader" },
+    { path = "src.loader", key = "loader", default = true },
     { path = "src.open", key = "open" },
     { path = "src.new", key = "new" }
 

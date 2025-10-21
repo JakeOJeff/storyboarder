@@ -1,5 +1,5 @@
 local loader = {}
-local input = require("elements.input")
+local input = require("src.elements.input")
 
 
 function loader:load()
@@ -7,11 +7,11 @@ function loader:load()
 end
 
 function loader:textInput(t)
-    
+    fileInput:textInput(t)
 end
 
 function loader:draw()
-    
+    fileInput:draw()
 end
 
 
