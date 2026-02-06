@@ -88,7 +88,7 @@ export function StoryNode({ id, data, selected }: NodeProps) {
 
             {/* Header */}
             <div className="border-b border-zinc-100 bg-zinc-50 px-4 py-2">
-                <span className="text-xs font-semibold uppercase text-zinc-400">Scene Node</span>
+                <span className="text-xs font-semibold uppercase text-zinc-400">Draft Scene Node</span>
             </div>
 
             {/* Content */}
@@ -151,8 +151,11 @@ export function StoryNode({ id, data, selected }: NodeProps) {
                         <label className="text-xs font-medium text-zinc-500">Options</label>
                         <button
                             onClick={() => {
-                                const newOption = { id: crypto.randomUUID(), text: '' };
+                                const choiceId = crypto.randomUUID();
+                                const newOption = { id: choiceId, text: '' };
                                 updateNodeData(id, { options: [...(storyData.options || []), newOption] });
+                                // Using the same store action for consistency
+                                useStore.getState().addChoiceWithConnector(id, choiceId);
                             }}
                             className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-blue-500 hover:bg-blue-50"
                         >
@@ -177,8 +180,7 @@ export function StoryNode({ id, data, selected }: NodeProps) {
                                 />
                                 <button
                                     onClick={() => {
-                                        const newOptions = (storyData.options || []).filter((o) => o.id !== option.id);
-                                        updateNodeData(id, { options: newOptions });
+                                        useStore.getState().removeChoiceWithConnector(id, option.id, 'story');
                                     }}
                                     className="text-zinc-400 hover:text-red-500"
                                 >

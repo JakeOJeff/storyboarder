@@ -6,6 +6,7 @@ import { generateLuaCode } from '@/lib/luaGenerator';
 
 export function Toolbar({ onOpenSettings }: { onOpenSettings?: () => void }) {
     const addNode = useStore((state) => state.addNode);
+    const addDraftNode = useStore((state) => state.addDraftNode);
     const deleteSelected = useStore((state) => state.deleteSelected);
     const nodes = useStore((state) => state.nodes);
     const edges = useStore((state) => state.edges);
@@ -25,11 +26,12 @@ export function Toolbar({ onOpenSettings }: { onOpenSettings?: () => void }) {
     return (
         <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 p-2 shadow-xl backdrop-blur-sm">
             <button
-                onClick={addNode}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-colors hover:bg-[#ec3750] hover:text-white"
-                title="Add Node"
+                onClick={addDraftNode}
+                className="flex items-center justify-center rounded-full bg-[#ec3750] px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90 uppercase tracking-tighter"
+                title="Add Scene"
             >
-                <Plus size={20} />
+                <Plus size={18} className="mr-1" />
+                SCENE
             </button>
 
             <div className="h-6 w-px bg-slate-200"></div>

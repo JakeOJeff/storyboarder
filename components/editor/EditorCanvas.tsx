@@ -14,10 +14,12 @@ import '@xyflow/react/dist/style.css';
 import { useStore } from '@/lib/store';
 import { useProjectStore } from '@/lib/useProjectStore';
 import { StoryNode } from './StoryNode';
+import { ConnectorNode } from './ConnectorNode';
 import { Toolbar } from './Toolbar';
 
 const nodeTypes: NodeTypes = {
     story: StoryNode,
+    connector: ConnectorNode,
 };
 
 export function EditorCanvas({ projectId, onOpenSettings }: { projectId: string; onOpenSettings?: () => void }) {
@@ -46,22 +48,32 @@ export function EditorCanvas({ projectId, onOpenSettings }: { projectId: string;
             try {
                 const { nodes: savedNodes, edges: savedEdges } = JSON.parse(savedData);
                 setGraph(savedNodes || [], savedEdges || []);
+                return;
             } catch (e) {
                 console.error("Failed to load project", e);
                 setGraph([], []);
             }
-        } else {
-            // Default start node if new project
-            const defaultNodes = [
-                {
-                    id: 'start',
-                    type: 'story',
-                    position: { x: 250, y: 100 },
-                    data: { text: 'Start your story here...', image: '' },
-                }
-            ];
-            setGraph(defaultNodes, []);
         }
+
+        // Default start node if new project
+        const defaultNodes: any = [
+            {
+                id: 'start',
+                type: 'renpyScene',
+                position: { x: 250, y: 100 },
+                data: {
+                    id: 'start',
+                    title: 'Start',
+                    visuals: { background: '', characters: [], transition: 'dissolve' },
+                    audio: { bgm: '', sfx: '', voice: '' },
+                    dialogue: [{ speaker: '', text: 'Start your story here...', voice: '', characterImage: '', animation: 'None' }],
+                    choices: [],
+                    logic: { conditions: [], effects: [], python: '' },
+                    flow: { next: '', end: false }
+                },
+            }
+        ];
+        setGraph(defaultNodes, []);
     }, [projectId, setGraph, getProject]);
 
     // Save project data (Debounced)
