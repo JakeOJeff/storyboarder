@@ -30,9 +30,9 @@ export default function Home() {
           <div className="flex items-center gap-6">
             <UserMenu />
             <div className="hidden items-center gap-2 sm:flex">
-              <span className="text-2xl font-bold tracking-tighter uppercase italic -skew-x-12">HACK CLUB</span>
+              <span className="text-2xl font-bold tracking-tighter uppercase italic -skew-x-12">STORYBOARDER</span>
               <span className="font-mono text-white/80">|</span>
-              <span className="font-bold tracking-tight">Storyboarder</span>
+              <span className="font-bold tracking-tight">Hack Club</span>
             </div>
           </div>
           <div className="flex items-center gap-4 sm:hidden">

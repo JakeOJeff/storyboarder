@@ -64,18 +64,21 @@ export function EditorCanvas({ projectId, onOpenSettings }: { projectId: string;
         }
     }, [projectId, setGraph, getProject]);
 
-    // Save project data
+    // Save project data (Debounced)
     React.useEffect(() => {
         if (nodes.length === 0 && edges.length === 0) return;
 
         const data = { nodes, edges };
 
-        setIsSaving(true);
-        saveProjectData(projectId, data).finally(() => {
-            setTimeout(() => setIsSaving(false), 1000); // Keep indicator for at least 1s for better UX
-        });
+        const timeoutId = setTimeout(() => {
+            setIsSaving(true);
+            saveProjectData(projectId, data).finally(() => {
+                setTimeout(() => setIsSaving(false), 1000); // Keep indicator for better UX
+            });
+            localStorage.setItem(`storyboarder-project-${projectId}`, JSON.stringify(data));
+        }, 1000); // 1s debounce
 
-        localStorage.setItem(`storyboarder-project-${projectId}`, JSON.stringify(data));
+        return () => clearTimeout(timeoutId);
     }, [nodes, edges, projectId, saveProjectData]);
 
     return (

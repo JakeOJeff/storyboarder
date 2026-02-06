@@ -22,19 +22,21 @@ export function SignInButton() {
         );
     }
 
-    const avatarSrc = user.avatar || "https://cloud-i58v96x56-hack-club-bot.vercel.app/0flag-orpheus-top.png";
+    const avatarSrc = user.image || user.avatar || "https://cloud-i58v96x56-hack-club-bot.vercel.app/0flag-orpheus-top.png";
 
     return (
         <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-slate-700">{user.name}</span>
+            <span className="text-sm font-bold text-white">{user.name}</span>
 
-            <Image
-                src={avatarSrc}
-                alt="avatar"
-                width={36}
-                height={36}
-                className="rounded-full border border-slate-200"
-            />
+            <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-white/20 shadow-sm">
+                <Image
+                    src={avatarSrc}
+                    alt={user.name || "avatar"}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                />
+            </div>
         </div>
     );
 }

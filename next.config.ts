@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'avatars.slack-edge.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'files.slack.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'cloud-i58v96x56-hack-club-bot.vercel.app',
       }
     ],

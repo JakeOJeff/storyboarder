@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import { FlagOrpheusTop } from "@/components/icons/FlagOrpheusTop";
+import { CookieDisclaimer } from "@/components/CookieDisclaimer";
 
 export default function RootLayout({
   children,
@@ -35,6 +36,7 @@ export default function RootLayout({
           </a>
         </div>
         {children}
+        <CookieDisclaimer />
       </body>
     </html>
   );
