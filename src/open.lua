@@ -1,3 +1,0 @@
-local open = {}
-
-return open
