@@ -4,6 +4,7 @@ import { useProjectStore } from "@/lib/useProjectStore";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { CreateProjectButton } from "@/components/dashboard/CreateProjectButton";
 import { UserMenu } from "@/components/auth/UserMenu";
+import { ReportIssueButton } from "@/components/dashboard/ReportIssueButton";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4 sm:hidden">
+            <ReportIssueButton />
             <span className="font-bold tracking-tight">Storyboarder</span>
           </div>
         </div>
@@ -67,6 +69,11 @@ export default function Home() {
               />
             ))
           )}
+        </div>
+
+        {/* Report Issue Button */}
+        <div className="mt-12 flex justify-center pb-8">
+          <ReportIssueButton />
         </div>
       </main>
     </div>

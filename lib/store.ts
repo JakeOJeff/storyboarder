@@ -11,12 +11,39 @@ import {
     Connection,
 } from '@xyflow/react';
 
-export interface StoryNodeData extends Record<string, unknown> {
+export interface DialogueEntry {
+    speaker: string;
     text: string;
     image?: string;
-    description?: string;
-    _preview?: string;
-    options?: { id: string; text: string; targetNodeId?: string }[];
+    animation?: string;
+    _preview?: string; // For local UI preview
+}
+
+export interface StoryNodeChoice {
+    id: string;
+    text: string;
+    targetNodeId?: string;
+}
+
+export interface StoryNodeData extends Record<string, unknown> {
+    title: string;
+    visuals: {
+        background: string;
+        _bgPreview?: string;
+        characters: string[];
+        transition: string;
+    };
+    audio: {
+        bgm: string;
+        sfx: string;
+    };
+    dialogue: DialogueEntry[];
+    choices: StoryNodeChoice[];
+    logic: {
+        conditions: any[];
+        effects: any[];
+        python: string;
+    };
 }
 
 export type StoryNode = Node<StoryNodeData>;
@@ -29,7 +56,6 @@ interface EditorState {
     onConnect: OnConnect;
     addNode: () => void;
     addDraftNode: () => void;
-    addChoiceWithConnector: (sourceId: string, handleId: string) => void;
     removeChoiceWithConnector: (nodeId: string, choiceId: string, type: 'story') => void;
     updateNodeData: (id: string, data: Partial<StoryNodeData>) => void;
     deleteSelected: () => void;
@@ -42,9 +68,25 @@ export const defaultNodes: StoryNode[] = [
         type: 'story',
         position: { x: 250, y: 100 },
         data: {
-            text: 'Start your story here...',
-            image: '',
-            options: []
+            title: 'Start Scene',
+            visuals: {
+                background: '',
+                characters: [],
+                transition: 'none'
+            },
+            audio: {
+                bgm: '',
+                sfx: ''
+            },
+            dialogue: [
+                { speaker: 'Narrator', text: 'Start your story here...' }
+            ],
+            choices: [],
+            logic: {
+                conditions: [],
+                effects: [],
+                python: ''
+            }
         },
     }
 ];
@@ -72,12 +114,12 @@ export const useStore = create<EditorState>((set, get) => ({
 
             if (sourceNode) {
                 const data = sourceNode.data as StoryNodeData;
-                const optionIndex = data.options?.findIndex(o => o.id === sourceHandle);
+                const choiceIndex = data.choices?.findIndex(o => o.id === sourceHandle);
 
-                if (optionIndex !== undefined && optionIndex !== -1) {
-                    const newOptions = [...(data.options || [])];
-                    newOptions[optionIndex] = { ...newOptions[optionIndex], targetNodeId: target };
-                    get().updateNodeData(source, { options: newOptions });
+                if (choiceIndex !== undefined && choiceIndex !== -1) {
+                    const newChoices = [...(data.choices || [])];
+                    newChoices[choiceIndex] = { ...newChoices[choiceIndex], targetNodeId: target };
+                    get().updateNodeData(source, { choices: newChoices });
                 }
             }
         }
@@ -95,54 +137,39 @@ export const useStore = create<EditorState>((set, get) => ({
             id,
             type: 'story',
             position: { x: Math.random() * 400, y: Math.random() * 400 },
-            data: { text: 'New Draft Scene', image: '', options: [] },
+            data: {
+                title: 'New Draft Scene',
+                visuals: {
+                    background: '',
+                    characters: [],
+                    transition: 'none'
+                },
+                audio: {
+                    bgm: '',
+                    sfx: ''
+                },
+                dialogue: [],
+                choices: [],
+                logic: {
+                    conditions: [],
+                    effects: [],
+                    python: ''
+                }
+            },
         };
         set({ nodes: [...get().nodes, newNode] });
     },
-    addChoiceWithConnector: (sourceId: string, handleId: string) => {
-        const connectorId = `connector-${handleId}`;
-        const sourceNode = get().nodes.find(n => n.id === sourceId);
-        if (!sourceNode) return;
-
-        const connectorNode: StoryNode = {
-            id: connectorId,
-            type: 'connector',
-            position: { x: 370, y: 150 }, // Relative to parent
-            parentId: sourceId,
-            extent: 'parent',
-            draggable: false, // Keep it fixed relative to parent
-            data: {} as any,
-        };
-
-        const newEdge: Edge = {
-            id: `edge-${handleId}`,
-            source: sourceId,
-            sourceHandle: handleId,
-            target: connectorId,
-            type: 'smoothstep',
-            animated: true,
-        };
-
-        set({
-            nodes: [...get().nodes, connectorNode],
-            edges: [...get().edges, newEdge],
-        });
-    },
     removeChoiceWithConnector: (nodeId: string, choiceId: string, type: 'story') => {
-        const connectorId = `connector-${choiceId}`;
-
-        // 1. Remove from node data
         const node = get().nodes.find(n => n.id === nodeId);
         if (node) {
             const data = node.data as StoryNodeData;
-            const newOptions = (data.options || []).filter(o => o.id !== choiceId);
-            get().updateNodeData(nodeId, { options: newOptions });
+            const newChoices = (data.choices || []).filter(o => o.id !== choiceId);
+            get().updateNodeData(nodeId, { choices: newChoices });
         }
 
-        // 2. Remove connector node and edges
+        // Also clean up any edges associated with this choice handle
         set({
-            nodes: get().nodes.filter(n => n.id !== connectorId),
-            edges: get().edges.filter(e => e.sourceHandle !== choiceId && e.target !== connectorId)
+            edges: get().edges.filter(e => e.sourceHandle !== choiceId)
         });
     },
     updateNodeData: (id, data) => {

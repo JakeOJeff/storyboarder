@@ -7,32 +7,49 @@ local story = {
 `;
 
     nodes.forEach((node) => {
-        // Find options/connections from this node
         const outgoingEdges = edges.filter((e) => e.source === node.id);
+        const data = node.data;
 
         lua += `    ["${node.id}"] = {
-        text = "${node.data.text.replace(/"/g, '\\"')}",
-        image = "${node.data.image || ''}",
-        options = {
+        title = "${(data.title || '').replace(/"/g, '\\"')}",
+        visuals = {
+            background = "${data.visuals.background}",
+            transition = "${data.visuals.transition}",
+            characters = { ${data.visuals.characters.map(c => `"${c}"`).join(', ')} }
+        },
+        audio = {
+            bgm = "${data.audio.bgm}",
+            sfx = "${data.audio.sfx}"
+        },
+        dialogue = {
 `;
 
-        // In a real game, you might want mapped text for choices. 
-        // Since our edges are simple connections, we'll just link to the target ID.
-        if (node.data.options && node.data.options.length > 0) {
-            node.data.options.forEach(option => {
-                const connectedEdge = outgoingEdges.find(e => e.sourceHandle === option.id);
+        data.dialogue.forEach((d) => {
+            lua += `            { speaker = "${d.speaker.replace(/"/g, '\\"')}", text = "${d.text.replace(/"/g, '\\"')}", image = "${d.image || ''}", animation = "${d.animation || ''}" },\n`;
+        });
+
+        lua += `        },
+        choices = {
+`;
+
+        if (data.choices && data.choices.length > 0) {
+            data.choices.forEach(choice => {
+                const connectedEdge = outgoingEdges.find(e => e.sourceHandle === choice.id);
                 if (connectedEdge) {
-                    lua += `            { target = "${connectedEdge.target}", text = "${option.text.replace(/"/g, '\\"')}" },\n`;
+                    lua += `            { target = "${connectedEdge.target}", text = "${choice.text.replace(/"/g, '\\"')}" },\n`;
                 }
             });
         } else {
             // Default connection logic (single output)
-            outgoingEdges.forEach((edge, index) => {
+            outgoingEdges.forEach((edge) => {
                 lua += `            { target = "${edge.target}", text = "Continue" },\n`;
             });
         }
 
-        lua += `        }
+        lua += `        },
+        logic = {
+            python = [=[${data.logic.python}]=]
+        }
     },\n`;
     });
 

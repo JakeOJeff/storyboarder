@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Type, AlignLeft, Image as ImageIcon, FolderOpen, Save } from 'lucide-react';
 import { useProjectStore } from '@/lib/useProjectStore';
 
 interface SettingsModalProps {
@@ -14,13 +14,11 @@ export function SettingsModal({ projectId, isOpen, onClose }: SettingsModalProps
     const project = useProjectStore((state) => state.projects.find((p) => p.id === projectId));
     const updateProject = useProjectStore((state) => state.updateProject);
 
-    // Local state for inputs
     const [gameDir, setGameDir] = useState(project?.gameDirectory || '');
     const [title, setTitle] = useState(project?.title || '');
     const [description, setDescription] = useState(project?.description || '');
     const [thumbnail, setThumbnail] = useState(project?.thumbnailUrl || '');
 
-    // Sync local state when modal opens or project changes
     React.useEffect(() => {
         if (project) {
             setGameDir(project.gameDirectory || '');
@@ -42,81 +40,85 @@ export function SettingsModal({ projectId, isOpen, onClose }: SettingsModalProps
 
     if (!isOpen) return null;
 
-    if (!project) {
-        return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                <div className="w-[400px] rounded-xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
-                    <div className="flex flex-col items-center gap-4 text-center">
-                        <p className="text-zinc-600 dark:text-zinc-400">Loading project settings...</p>
-                        <button onClick={onClose} className="text-sm text-blue-500 hover:underline">Close</button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="w-[500px] rounded-xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800">
-                <div className="mb-6 flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Project Settings</h2>
-                    <button onClick={onClose} className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800">
-                        <X className="h-5 w-5 text-slate-500" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div
+                className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity animate-in fade-in duration-300"
+                onClick={onClose}
+            />
+
+            <div className="relative w-full max-w-[600px] rounded-[32px] border border-white/20 bg-white p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] animate-in zoom-in-95 duration-200 ease-out">
+                {/* Header */}
+                <div className="mb-8 flex items-center justify-between">
+                    <div>
+                        <h2 className="text-2xl font-black tracking-tight text-slate-900">Project Settings</h2>
+                        <p className="text-sm font-medium text-slate-500">Configure your storyboard properties</p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="rounded-full bg-slate-100 p-2 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-900 active:scale-90"
+                    >
+                        <X size={20} />
                     </button>
                 </div>
 
-                <div className="space-y-4">
-                    <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                            Project Name
-                        </label>
+                <div className="space-y-6">
+                    {/* Project Name */}
+                    <div className="group">
+                        <div className="mb-2 flex items-center gap-2">
+                            <Type size={16} className="text-[#ec3750]" />
+                            <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Project Name</label>
+                        </div>
                         <input
                             type="text"
-                            className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2 text-sm focus:border-[#ec3750] focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
-                            placeholder="My Awesome Story"
+                            className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-3 text-sm font-medium text-slate-900 placeholder:text-slate-300 transition-all focus:border-[#ec3750] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ec3750]/5"
+                            placeholder="e.g. My Awesome Visual Novel"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
                     </div>
 
+                    {/* Description */}
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                            Description
-                        </label>
+                        <div className="mb-2 flex items-center gap-2">
+                            <AlignLeft size={16} className="text-[#ec3750]" />
+                            <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Description</label>
+                        </div>
                         <textarea
-                            className="w-full resize-none rounded-lg border border-slate-300 bg-slate-50 px-4 py-2 text-sm focus:border-[#ec3750] focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
-                            placeholder="A brief description of your project..."
+                            className="w-full resize-none rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-3 text-sm font-medium text-slate-900 placeholder:text-slate-300 transition-all focus:border-[#ec3750] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ec3750]/5"
+                            placeholder="Tell us about your story..."
                             rows={3}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
                     </div>
 
-                    <div>
-                        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                            Thumbnail URL
-                        </label>
-                        <input
-                            type="text"
-                            className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2 text-sm focus:border-[#ec3750] focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
-                            placeholder="https://example.com/image.jpg"
-                            value={thumbnail}
-                            onChange={(e) => setThumbnail(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="border-t border-slate-200 pt-4 dark:border-slate-800">
-                        <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                            Game Directory
-                        </label>
-                        <p className="mb-2 text-xs text-slate-500">
-                            The root folder of your LÖVE game (e.g., C:/Projects/MyGame). This is used to calculate relative paths for images.
-                        </p>
-                        <div className="flex items-center gap-2">
+                    <div className="grid grid-cols-2 gap-6">
+                        {/* Thumbnail */}
+                        <div>
+                            <div className="mb-2 flex items-center gap-2">
+                                <ImageIcon size={16} className="text-[#ec3750]" />
+                                <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Thumbnail URL</label>
+                            </div>
                             <input
                                 type="text"
-                                className="flex-1 rounded-lg border border-slate-300 bg-slate-50 px-4 py-2 text-sm focus:border-[#ec3750] focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
-                                placeholder="C:/Path/To/Game"
+                                className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-3 text-sm font-medium text-slate-900 placeholder:text-slate-300 transition-all focus:border-[#ec3750] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ec3750]/5"
+                                placeholder="https://..."
+                                value={thumbnail}
+                                onChange={(e) => setThumbnail(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Game Directory */}
+                        <div>
+                            <div className="mb-2 flex items-center gap-2">
+                                <FolderOpen size={16} className="text-[#ec3750]" />
+                                <label className="text-xs font-bold uppercase tracking-widest text-slate-400">LÖVE Directory</label>
+                            </div>
+                            <input
+                                type="text"
+                                className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-5 py-3 text-sm font-medium text-slate-900 placeholder:text-slate-300 transition-all focus:border-[#ec3750] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ec3750]/5"
+                                placeholder="C:/Projects/Game"
                                 value={gameDir}
                                 onChange={(e) => setGameDir(e.target.value)}
                             />
@@ -124,18 +126,20 @@ export function SettingsModal({ projectId, isOpen, onClose }: SettingsModalProps
                     </div>
                 </div>
 
-                <div className="mt-8 flex justify-end gap-3">
+                {/* Footer / Actions */}
+                <div className="mt-10 flex items-center justify-end gap-3">
                     <button
                         onClick={onClose}
-                        className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                        className="rounded-full px-6 py-2.5 text-sm font-bold text-slate-500 transition-all hover:bg-slate-100 active:scale-95"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
-                        className="rounded-lg bg-[#ec3750] px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
+                        className="flex items-center gap-2 rounded-full bg-[#ec3750] px-8 py-2.5 text-sm font-bold text-white shadow-[0_8px_16px_-4px_rgba(236,55,80,0.4)] transition-all hover:bg-[#d12a3f] hover:shadow-[0_12px_24px_-8px_rgba(236,55,80,0.5)] active:scale-95"
                     >
-                        Save Settings
+                        <Save size={18} />
+                        Save Changes
                     </button>
                 </div>
             </div>

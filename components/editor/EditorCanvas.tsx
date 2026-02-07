@@ -14,12 +14,10 @@ import '@xyflow/react/dist/style.css';
 import { useStore } from '@/lib/store';
 import { useProjectStore } from '@/lib/useProjectStore';
 import { StoryNode } from './StoryNode';
-import { ConnectorNode } from './ConnectorNode';
 import { Toolbar } from './Toolbar';
 
 const nodeTypes: NodeTypes = {
     story: StoryNode,
-    connector: ConnectorNode,
 };
 
 export function EditorCanvas({ projectId, onOpenSettings }: { projectId: string; onOpenSettings?: () => void }) {
@@ -59,17 +57,28 @@ export function EditorCanvas({ projectId, onOpenSettings }: { projectId: string;
         const defaultNodes: any = [
             {
                 id: 'start',
-                type: 'renpyScene',
+                type: 'story',
                 position: { x: 250, y: 100 },
                 data: {
-                    id: 'start',
-                    title: 'Start',
-                    visuals: { background: '', characters: [], transition: 'dissolve' },
-                    audio: { bgm: '', sfx: '', voice: '' },
-                    dialogue: [{ speaker: '', text: 'Start your story here...', voice: '', characterImage: '', animation: 'None' }],
+                    title: 'Start Scene',
+                    visuals: {
+                        background: '',
+                        characters: [],
+                        transition: 'none'
+                    },
+                    audio: {
+                        bgm: '',
+                        sfx: ''
+                    },
+                    dialogue: [
+                        { speaker: 'Narrator', text: 'Start your story here...' }
+                    ],
                     choices: [],
-                    logic: { conditions: [], effects: [], python: '' },
-                    flow: { next: '', end: false }
+                    logic: {
+                        conditions: [],
+                        effects: [],
+                        python: ''
+                    }
                 },
             }
         ];
